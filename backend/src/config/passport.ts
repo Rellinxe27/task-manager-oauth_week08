@@ -9,6 +9,8 @@ passport.serializeUser((user: any, done) => {
   done(null, user.id);
 });
 
+// Deserialize user from the session
+// This retrieves the full user object from the database
 passport.deserializeUser(async (id: string, done) => {
   try {
     const user = await User.findById(id);
@@ -18,6 +20,7 @@ passport.deserializeUser(async (id: string, done) => {
   }
 });
 
+// Google OAuth Strategy Configuration
 passport.use(
   new GoogleStrategy(
     {
@@ -27,14 +30,17 @@ passport.use(
     },
     async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
       try {
+          // Check if user already exists in our database
         let user = await User.findOne({ googleId: profile.id });
 
         if (user) {
+            // User exists, update last login time
           user.lastLogin = new Date();
           await user.save();
           return done(null, user);
         }
 
+        // Create new user if doesn't exist
         user = await User.create({
           googleId: profile.id,
           email: profile.emails?.[0]?.value,

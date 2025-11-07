@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+// Load environment variables first, before other imports
 dotenv.config();
 
 import express from 'express';
@@ -16,8 +17,10 @@ import { AuthRequest, GraphQLContext } from './types';
 
 const app = express();
 
+// Trust proxy - required for Render HTTPS deployment
 app.set('trust proxy', 1);
 
+// CORS configuration
 app.use(cors({
     origin: process.env.NODE_ENV === 'production'
         ? process.env.CLIENT_URL
@@ -28,17 +31,19 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Session configuration
 app.use(session({
     secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000
+        secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+        httpOnly: true, // Prevents client-side JS access
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
 
+// Initialize Passport for authentication
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -61,7 +66,7 @@ async function startServer() {
                 const authReq = req as AuthRequest;
                 return {
                     req: authReq,
-                    user: authReq.user
+                    user: authReq.user // Pass authenticated user to GraphQL context
                 };
             }
         })
@@ -71,6 +76,7 @@ async function startServer() {
     app.use('/auth', authRoutes);
     app.use('/api/tasks', taskRoutes);
 
+    // Root route - API information
     app.get('/', (req, res) => {
         res.json({
             message: 'Task Manager API with OAuth, GraphQL, and TypeScript',
@@ -90,6 +96,7 @@ async function startServer() {
         });
     });
 
+    // Dashboard route (protected)
     app.get('/dashboard', (req: AuthRequest, res) => {
         if (!req.isAuthenticated()) {
             return res.status(401).json({
@@ -116,6 +123,7 @@ async function startServer() {
         });
     });
 
+    // Login failed route
     app.get('/login-failed', (req, res) => {
         res.status(401).json({
             success: false,
@@ -124,10 +132,12 @@ async function startServer() {
         });
     });
 
+    // 404 handler
     app.use((req, res) => {
         res.status(404).json({ success: false, message: 'Route not found' });
     });
 
+    // Error handler
     app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
         console.error(err.stack);
         res.status(500).json({
@@ -144,6 +154,7 @@ async function startServer() {
         console.log(`GraphQL endpoint: http://localhost:${PORT}/api/apollo`);
         console.log(`Login: http://localhost:${PORT}/auth/google`);
 
+        // Connect to MongoDB after server starts
         mongoose.connect(process.env.MONGODB_URI as string)
             .then(() => console.log('MongoDB connected'))
             .catch((err) => console.error('MongoDB error:', err.message));
