@@ -24,7 +24,7 @@ Content-Type: application/json
 {
   "query": "query($id: ID!) { task(id: $id) { success data { id title description status dueDate } } }",
   "variables": {
-    "id": "YOUR_TASK_ID_HERE"
+    "id": "TASK_ID_HERE"
   }
 }
 
@@ -51,7 +51,7 @@ Content-Type: application/json
 {
   "query": "mutation($id: ID!, $input: UpdateTaskInput!) { updateTask(id: $id, input: $input) { success message data { id title status } } }",
   "variables": {
-    "id": "YOUR_TASK_ID_HERE",
+    "id": "TASK_ID_HERE",
     "input": {
       "status": "completed"
     }
@@ -65,6 +65,6 @@ Content-Type: application/json
 {
   "query": "mutation($id: ID!) { deleteTask(id: $id) { success message data { id title } } }",
   "variables": {
-    "id": "YOUR_TASK_ID_HERE"
+    "id": "TASK_ID_HERE"
   }
 }
