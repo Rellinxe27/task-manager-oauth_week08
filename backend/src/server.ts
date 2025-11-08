@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 // Load environment variables first, before other imports
 dotenv.config();
 
-import express from 'express';
+import express, { Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import session from 'express-session';
@@ -97,13 +97,14 @@ async function startServer() {
     });
 
     // Dashboard route (protected)
-    app.get('/dashboard', (req: AuthRequest, res: express.Response) => {
+    app.get('/dashboard', (req: AuthRequest, res: Response): void => {
         if (!req.isAuthenticated()) {
-            return res.status(401).json({
+            res.status(401).json({
                 success: false,
                 message: 'Please login',
                 loginUrl: '/auth/google'
             });
+            return;
         }
 
         res.json({
