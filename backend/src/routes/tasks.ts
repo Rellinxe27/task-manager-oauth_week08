@@ -10,8 +10,10 @@ import {
 
 const router = express.Router();
 
+// Apply authentication middleware to all routes
 router.use(ensureAuthenticated);
 
+// Task routes
 router.get('/', getAllTasks);
 router.get('/:id', getTaskById);
 router.post('/', createTask);
