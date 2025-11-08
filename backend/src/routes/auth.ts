@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Response } from 'express';
 import passport from 'passport';
 import { AuthRequest } from '../types';
 
@@ -14,16 +14,17 @@ router.get(
     }
 );
 
-router.get('/logout', (req: AuthRequest, res: Response) => {
+router.get('/logout', (req: AuthRequest, res: Response): void => {
     req.logout((err) => {
         if (err) {
-            return res.status(500).json({ success: false, message: 'Error logging out' });
+            res.status(500).json({ success: false, message: 'Error logging out' });
+            return;
         }
         res.json({ success: true, message: 'Logged out successfully' });
     });
 });
 
-router.get('/status', (req: AuthRequest, res: Response) => {
+router.get('/status', (req: AuthRequest, res: Response): void => {
     if (req.isAuthenticated()) {
         res.json({
             success: true,
@@ -40,9 +41,10 @@ router.get('/status', (req: AuthRequest, res: Response) => {
     }
 });
 
-router.get('/profile', (req: AuthRequest, res: Response) => {
+router.get('/profile', (req: AuthRequest, res: Response): void => {
     if (!req.isAuthenticated()) {
-        return res.status(401).json({ success: false, message: 'Authentication required' });
+        res.status(401).json({ success: false, message: 'Authentication required' });
+        return;
     }
 
     res.json({
