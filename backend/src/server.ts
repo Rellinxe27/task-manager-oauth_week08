@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 // Load environment variables first, before other imports
 dotenv.config();
 
-import express, { Response } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import session from 'express-session';
@@ -97,8 +97,9 @@ async function startServer() {
     });
 
     // Dashboard route (protected)
-    app.get('/dashboard', (req: AuthRequest, res: Response): void => {
-        if (!req.isAuthenticated()) {
+    app.get('/dashboard', (req, res) => {
+        const authReq = req as AuthRequest;
+        if (!authReq.isAuthenticated()) {
             res.status(401).json({
                 success: false,
                 message: 'Please login',
@@ -109,11 +110,11 @@ async function startServer() {
 
         res.json({
             success: true,
-            message: `Welcome ${req.user!.displayName}!`,
+            message: `Welcome ${authReq.user!.displayName}!`,
             user: {
-                email: req.user!.email,
-                displayName: req.user!.displayName,
-                picture: req.user!.picture
+                email: authReq.user!.email,
+                displayName: authReq.user!.displayName,
+                picture: authReq.user!.picture
             },
             endpoints: {
                 graphql: '/api/apollo',

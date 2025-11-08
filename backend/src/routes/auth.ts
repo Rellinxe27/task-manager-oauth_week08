@@ -1,4 +1,4 @@
-import express, { Response } from 'express';
+import express from 'express';
 import passport from 'passport';
 import { AuthRequest } from '../types';
 
@@ -14,8 +14,9 @@ router.get(
     }
 );
 
-router.get('/logout', (req: AuthRequest, res: Response): void => {
-    req.logout((err) => {
+router.get('/logout', (req, res) => {
+    const authReq = req as AuthRequest;
+    authReq.logout((err) => {
         if (err) {
             res.status(500).json({ success: false, message: 'Error logging out' });
             return;
@@ -24,16 +25,17 @@ router.get('/logout', (req: AuthRequest, res: Response): void => {
     });
 });
 
-router.get('/status', (req: AuthRequest, res: Response): void => {
-    if (req.isAuthenticated()) {
+router.get('/status', (req, res) => {
+    const authReq = req as AuthRequest;
+    if (authReq.isAuthenticated()) {
         res.json({
             success: true,
             authenticated: true,
             user: {
-                id: req.user!._id,
-                email: req.user!.email,
-                displayName: req.user!.displayName,
-                picture: req.user!.picture
+                id: authReq.user!._id,
+                email: authReq.user!.email,
+                displayName: authReq.user!.displayName,
+                picture: authReq.user!.picture
             }
         });
     } else {
@@ -41,8 +43,9 @@ router.get('/status', (req: AuthRequest, res: Response): void => {
     }
 });
 
-router.get('/profile', (req: AuthRequest, res: Response): void => {
-    if (!req.isAuthenticated()) {
+router.get('/profile', (req, res) => {
+    const authReq = req as AuthRequest;
+    if (!authReq.isAuthenticated()) {
         res.status(401).json({ success: false, message: 'Authentication required' });
         return;
     }
@@ -50,15 +53,15 @@ router.get('/profile', (req: AuthRequest, res: Response): void => {
     res.json({
         success: true,
         user: {
-            id: req.user!._id,
-            googleId: req.user!.googleId,
-            email: req.user!.email,
-            displayName: req.user!.displayName,
-            firstName: req.user!.firstName,
-            lastName: req.user!.lastName,
-            picture: req.user!.picture,
-            createdAt: req.user!.createdAt,
-            lastLogin: req.user!.lastLogin
+            id: authReq.user!._id,
+            googleId: authReq.user!.googleId,
+            email: authReq.user!.email,
+            displayName: authReq.user!.displayName,
+            firstName: authReq.user!.firstName,
+            lastName: authReq.user!.lastName,
+            picture: authReq.user!.picture,
+            createdAt: authReq.user!.createdAt,
+            lastLogin: authReq.user!.lastLogin
         }
     });
 });
