@@ -1,11 +1,11 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { ensureAuthenticated } from '../middleware/auth';
 import {
-  getAllTasks,
-  getTaskById,
-  createTask,
-  updateTask,
-  deleteTask
+    getAllTasks,
+    getTaskById,
+    createTask,
+    updateTask,
+    deleteTask
 } from '../controllers/taskController';
 
 const router = express.Router();

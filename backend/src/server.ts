@@ -97,7 +97,7 @@ async function startServer() {
     });
 
     // Dashboard route (protected)
-    app.get('/dashboard', (req: AuthRequest, res) => {
+    app.get('/dashboard', (req: AuthRequest, res: express.Response) => {
         if (!req.isAuthenticated()) {
             return res.status(401).json({
                 success: false,
